@@ -28,44 +28,54 @@ function restoreProperty(originObject, prop, reals, useDefineProperty) {
 }
 
 suite('idleTimer', function() {
+  var stubAddIdleObserver, stubRemoveIdleObserver, stubSetTimeout, stubClearTimeout, stubDateNow, id;
+
+  var idleCallback = function() {
+    assert.isTrue(true);
+  };
+  var activeCallback = function() {
+    assert.isTrue(true);
+  };
   var reals = {};
 
+  setup(function() {
+    stubAddIdleObserver = this.sinon.stub();
+    switchProperty(navigator, 'addIdleObserver', stubAddIdleObserver, reals);
+    stubRemoveIdleObserver = this.sinon.stub();
+    switchProperty(navigator, 'setIdleTimeout', stubRemoveIdleObserver, reals);
+    stubSetTimeout = this.sinon.stub();
+    switchProperty(window, 'setTimeout', stubSetTimeout, reals);
+    stubClearTimeout = this.sinon.stub();
+    switchProperty(window, 'clearTimeout', stubClearTimeout, reals);
+    stubDateNow = this.sinon.stub();
+    switchProperty(Date, 'now', stubDateNow, reals);
+  });
+
+  teardown(function() {
+    restoreProperty(navigator, 'addIdleObserver', reals);
+    restoreProperty(navigator, 'setIdleTimeout', reals);
+    restoreProperty(window, 'setTimeout', reals);
+    restoreProperty(window, 'clearTimeout', reals);
+    restoreProperty(Date, 'now', reals);
+  });
+
   test('setIdleTimeout()', function() {
-    var stubAddIdleObserver, stubRemoveIdleObserver, stubSetTimeout, stubClearTimeout, stubDateNow;
-
-    setup(function() {
-      stubAddIdleObserver = this.sinon.stub();
-      switchProperty(navigator, 'addIdleObserver', stubAddIdleObserver, reals);
-      stubRemoveIdleObserver = this.sinon.stub();
-      switchProperty(navigator, 'setIdleTimeout', stubRemoveIdleObserver, reals);
-      stubSetTimeout = this.sinon.stub();
-      switchProperty(window, 'setTimeout', stubSetTimeout, reals);
-      stubClearTimeout = this.sinon.stub();
-      switchProperty(window, 'clearTimeout', stubClearTimeout, reals);
-      stubDateNow = this.sinon.stub();
-      switchProperty(Date, 'now', stubDateNow, reals);
-    });
-
-    teardown(function() {
-      restoreProperty(navigator, 'addIdleObserver', reals);
-      restoreProperty(navigator, 'setIdleTimeout', reals);
-      restoreProperty(window, 'setTimeout', reals);
-      restoreProperty(window, 'clearTimeout', reals);
-      restoreProperty(Date, 'now', reals);
-    });
-
-    var idleCallback = function() {};
-    var activeCallback = function() {};
-    var id;
-
     id = window.setIdleTimeout(idleCallback, activeCallback, 100);
+    
     assert.ok(id);
-    assert.isTrue(stubAddIdleObserver.called);
-    assert.isTrue(stubSetTimeout.called);
-    assert.isTrue(stubDateNow.called);
+    assert.isTrue(stubAddIdleObserver.calledOnce);
+    assert.isTrue(stubSetTimeout.calledOnce);
+    assert.isTrue(stubDateNow.calledOnce);
+
   });
 
   test('clearIdleTimeout()', function(done) {
-    assert.ok(true);
+    id = window.setIdleTimeout(idleCallback, activeCallback, 100);
+    
+    assert.ok(id);
+
+    window.clearIdleTimeout(id);
+
+    assert.isTrue(stubRemoveIdleObserver.calledOnce);
   });
 });
