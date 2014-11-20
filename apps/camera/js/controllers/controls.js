@@ -27,8 +27,30 @@ function ControlsController(app) {
   this.activity = app.activity;
   this.createView();
   this.bindEvents();
+  this.l10nGet = app.l10nGet;
+  this.updateSwitchLabels();
   debug('initialized');
 }
+
+/**
+ * Updates app `batteryStatus` and
+ * manages battery notifications.
+ *
+ * @private
+ */
+ControlsController.prototype.updateSwitchLabels = function () {
+  // We need the app to be first localized
+  // before setting proper aria-Labels
+  if (!this.app.localized()) {
+    this.app.on('localized', this.updateSwitchLabels);
+    return;
+  }
+
+  this.view.els.radios.camera.setAttribute('aria-label',
+    this.l10nGet('camera-mode-radio-button'));
+  this.view.els.radios.video.setAttribute('aria-label',
+    this.l10nGet('video-mode-radio-button'));
+};
 
 /**
  * Event bindings.
