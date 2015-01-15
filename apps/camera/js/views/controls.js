@@ -259,8 +259,8 @@ module.exports = View.extend({
     '<div class="controls-right">' +
       '<div class="mode-switch test-switch" name="switch">' +
         '<div class="inner js-switch" role="radiogroup">' +
-          '<div class="mode-switch_bg-icon js-radio-camera rotates" data-icon="camera" role="radio" aria-checked="true" data-icon="camera" data-l10n-id="camera-mode-radio-button" aria-label="Camera mode"></div>' +
-          '<div class="mode-switch_bg-icon js-radio-video rotates" data-icon="video" role="radio" aria-checked="false" data-icon="video" data-l10n-id="video-mode-radio-button" aria-label="Video mode"></div>' +
+          '<div class="mode-switch_bg-icon js-radio-camera rotates" data-icon="camera" role="radio" data-icon="camera" data-l10n-id="camera-mode-radio-button"></div>' +
+          '<div class="mode-switch_bg-icon js-radio-video rotates" data-icon="video" role="radio" data-icon="video" data-l10n-id="video-mode-radio-button"></div>' +
           '<div class="mode-switch_handle js-switch-handle" role="presentation" aria-hidden="true">' +
             '<div class="mode-switch_current-icon camera rotates js-icon-camera" data-icon="camera"></div>' +
             '<div class="mode-switch_current-icon video rotates js-icon-video" data-icon="video"></div>' +
