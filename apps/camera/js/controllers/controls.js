@@ -28,21 +28,20 @@ function ControlsController(app) {
   this.createView();
   this.bindEvents();
   this.l10nGet = app.l10nGet;
-  this.updateSwitchLabels();
+  this.updateA11yLabels();
+  this.updateShutterA11yLabel();
   debug('initialized');
 }
 
 /**
- * Updates app `batteryStatus` and
- * manages battery notifications.
+ * Set initial a11y labels on the camera view elements
  *
  * @private
  */
-ControlsController.prototype.updateSwitchLabels = function () {
+ControlsController.prototype.updateA11yLabels = function() {
   // We need the app to be first localized
   // before setting proper aria-Labels
   if (!this.app.localized()) {
-    this.app.on('localized', this.updateSwitchLabels);
     return;
   }
 
@@ -50,6 +49,35 @@ ControlsController.prototype.updateSwitchLabels = function () {
     this.l10nGet('camera-mode-radio-button'));
   this.view.els.radios.video.setAttribute('aria-label',
     this.l10nGet('video-mode-radio-button'));
+  this.view.els.thumbnail.setAttribute('aria-label',
+    this.l10nGet('thumbnail-button'));
+};
+
+/**
+ * Set the a11y label
+ * on the Shutter button based
+ * on recording ttribute.
+ *
+ * @param  {Boolean} recording
+ * @private
+ */
+ControlsController.prototype.updateShutterA11yLabel = function(recording) {
+  // We need the app to be first localized
+  // before setting proper aria-Labels
+  if (!this.app.localized()) {
+    return;
+  }
+  var a11yLabel;
+
+  if (this.app.settings.mode.selected('key') === 'picture') {
+    a11yLabel = 'capture-button-shutter';
+  } else {
+    a11yLabel = recording ?
+      'capture-button-stop-video' : 'capture-button-start-video';
+  }
+
+  this.view.els.capture.setAttribute('aria-label',
+    this.l10nGet(a11yLabel));
 };
 
 /**
@@ -78,6 +106,10 @@ ControlsController.prototype.bindEvents = function() {
   this.app.on('timer:started', this.onTimerStarted);
   this.app.on('timer:cleared', this.onTimerStopped);
   this.app.on('timer:ended', this.onTimerStopped);
+
+  // Localization
+  this.app.on('localized', this.updateA11yLabels);
+  this.app.on('localized', this.updateShutterA11yLabel);
 
   debug('events bound');
 };
@@ -167,6 +199,7 @@ ControlsController.prototype.onCaptureClick = function() {
  */
 ControlsController.prototype.onRecordingChange = function(recording) {
   this.view.set('recording', recording);
+  this.updateShutterLabel(recording);
   if (!recording) { this.onRecordingEnd(); }
 };
 
@@ -268,6 +301,7 @@ ControlsController.prototype.captureHighlightOff = function() {
 ControlsController.prototype.onViewModeChanged = function() {
   debug('view mode changed');
   this.app.settings.mode.next();
+  this.updateShutterLabel();
 };
 
 ControlsController.prototype.onCancelButtonClick = function() {

@@ -152,6 +152,7 @@ module.exports = View.extend({
   },
 
   setMode: function(mode) {
+    mode = mode || 'picture';
     debug('set mode: %s', mode);
     this.set('mode', mode);
     this.switchPosition = this.switchPositions[mode];
@@ -163,7 +164,6 @@ module.exports = View.extend({
 
   updateSwitchPosition: function(mode) {
     debug('updateSwitchPosition');
-    mode = mode || 'picture';
     if (!this.drag) { return; }
     this.drag.set({ x: this.switchPosition });
     this.els.radios.camera.setAttribute('aria-checked', mode === 'picture');
@@ -246,11 +246,11 @@ module.exports = View.extend({
   template: function() {
     /*jshint maxlen:false*/
     return '<div class="controls-left">' +
-      '<div class="controls-button controls-thumbnail-button test-thumbnail js-thumbnail rotates" name="thumbnail"></div>' +
+      '<div class="controls-button controls-thumbnail-button test-thumbnail js-thumbnail rotates" data-l10n-id="thumbnail-button" role="button" name="thumbnail"></div>' +
       '<div class="controls-button controls-cancel-pick-button test-cancel-pick rotates js-cancel" name="cancel" data-icon="close"></div>' +
     '</div>' +
     '<div class="controls-middle">' +
-      '<div class="capture-button test-capture rotates js-capture" name="capture">' +
+      '<div class="capture-button test-capture rotates js-capture" data-l10n-id="capture-button" role="button" name="capture">' +
         '<div class="circle outer-circle"></div>' +
         '<div class="circle inner-circle"></div>' +
         '<div class="center" data-icon="camera"></div>' +
